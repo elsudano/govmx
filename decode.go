@@ -10,6 +10,7 @@ import (
 	"io"
 	"log"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -46,27 +47,21 @@ func (d *Decoder) loadVMXMap() error {
 	for d.scanner.Scan() {
 		line := d.scanner.Text()
 
-		// Ignore comments and empty lines
-		if strings.HasPrefix(line, "#") || strings.TrimSpace(line) == "" {
+		re := regexp.MustCompile(`^(?P<key>[^#]\S+) ?= ?"(?P<value>.+)"$`)
+		match := re.FindStringSubmatch(line)
+		if match == nil {
 			continue
 		}
 
-		parts := strings.Split(line, "=")
-		if len(parts) != 2 {
-			errors = appendErrors(errors, fmt.Errorf("Invalid line: %s ", line))
+		groups := make(map[string]string)
+		for i, name := range re.SubexpNames() {
+			if i != 0 && name != "" {
+				groups[name] = match[i]
+			}
 		}
 
-		key := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
-
-		unquotedVal, err := strconv.Unquote(value)
-		if err != nil {
-			unquotedVal = value
-			//errors = appendErrors(errors, fmt.Errorf("Error unquoting vmx value %s: %v.", value, err))
-		}
-
-		key = strings.ToLower(key)
-		d.vmx[key] = unquotedVal
+		key := strings.ToLower(groups["key"])
+		d.vmx[key] = groups["value"]
 	}
 
 	if err := d.scanner.Err(); err != nil {
