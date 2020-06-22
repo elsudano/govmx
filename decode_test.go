@@ -36,4 +36,9 @@ func TestUnmarshal(t *testing.T) {
 	assert(t, len(vm2.SCSIDevices) == 2, fmt.Sprintf("%d != %d", len(vm2.SCSIDevices), 2))
 	assert(t, vm2.SCSIDevices[0].VMXID != "", fmt.Sprintf("VMXID should not be empty: ->%s<-", vm2.SCSIDevices[0].VMXID))
 	ok(t, err)
+
+	data, err = ioutil.ReadFile(filepath.Join(".", "fixtures", "c.vmx"))
+	vm3 := new(VirtualMachine)
+	err = Unmarshal([]byte(data), vm3)
+	ok(t, err)
 }
