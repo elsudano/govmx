@@ -32,7 +32,7 @@ type Device struct {
 	Autodetect     bool   `vmx:"autodetect,omitempty"`
 	StartConnected bool   `vmx:"startconnected,omitempty"`
 	Type           string `vmx:"devicetype,omitempty"`
-	Filename       string `vmxl:"filename,omitempty"`
+	Filename       string `vmx:"filename,omitempty"`
 }
 
 type SATADevice struct {
