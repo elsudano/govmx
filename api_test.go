@@ -1,4 +1,4 @@
-package vmx
+package govmx
 
 import (
 	"io/ioutil"
